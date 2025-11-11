@@ -6,8 +6,9 @@ from pydantic import BaseModel
 app = FastAPI(title="Glass Classifier estimator API")
 
 try:
-    model = joblib.load("glass_classifier.joblib")
-    print("model loaded successfully")
+    glass_classifier = joblib.load("glass_classifier.joblib")
+    redwine_classifier = joblib.load("redwine_classifier.joblib")
+    print("models loaded successfully")
 
     # with open("glass_classifier.pkl", "rb") as f:
     #     model = pickle.load(f)
@@ -15,7 +16,7 @@ except FileNotFoundError:
     raise RuntimeError('model file not found')
 
 
-class PredictionRequest(BaseModel):
+class PredictionRequestForGlass(BaseModel):
     # ['RI', 'Na', 'Mg', 'Al', 'Si', 'K', 'Ca', 'Ba', 'Fe']
     RI: float
     Na: float
@@ -27,8 +28,8 @@ class PredictionRequest(BaseModel):
     Ba: float
     Fe: float
 
-@app.post("/predict")
-def predict(request: PredictionRequest):
+@app.post("glass/predict")
+def predict(request: PredictionRequestForGlass):
     try:
         features = [[
             request.RI,
